@@ -1,10 +1,4 @@
-icarConexion(savedUrl, true);
-    }
-
-    btn.addEventListener('click', () => {
-      const url = input.value.trim().replace(/\/+$/, '');
-      if (!url) { setMsg('Pega primero la URL de ngrok.', 'text-rojoalerta'); return; }
-      verif<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -132,20 +126,32 @@ icarConexion(savedUrl, true);
   </footer>
 
   <script>
+    // Referencias a los elementos del panel de conexión
     const input = document.getElementById('apiUrlInput');
     const btn = document.getElementById('connectBtn');
     const msg = document.getElementById('panelMsg');
     const dot = document.getElementById('statusDot');
     const statusText = document.getElementById('statusText');
 
+    // Si ya había una URL guardada de una sesión anterior, la restauramos
+    // y verificamos la conexión en silencio (sin mostrar el mensaje "Verificando…")
     const savedUrl = sessionStorage.getItem('apiUrl');
     if (savedUrl) {
       input.value = savedUrl;
+      verificarConexion(savedUrl, true);
+    }
+
+    // Al hacer clic en "Verificar conexión", tomamos la URL escrita por el usuario
+    btn.addEventListener('click', () => {
+      const url = input.value.trim().replace(/\/+$/, '');
+      if (!url) { setMsg('Pega primero la URL de ngrok.', 'text-rojoalerta'); return; }
       verificarConexion(url, false);
     });
 
+    // Permitimos conectar también presionando Enter dentro del input
     input.addEventListener('keydown', e => { if (e.key === 'Enter') btn.click(); });
 
+    // Llama al endpoint /api/salud para confirmar que la API y MongoDB responden
     async function verificarConexion(url, silencioso) {
       btn.disabled = true;
       if (!silencioso) setMsg('Verificando conexión…', 'text-slate-400');
@@ -155,6 +161,8 @@ icarConexion(savedUrl, true);
         });
         if (!res.ok) throw new Error('HTTP ' + res.status);
         await res.json();
+
+        // Solo si la respuesta es exitosa guardamos la URL para los módulos
         sessionStorage.setItem('apiUrl', url);
         setMsg('Conectado. La API y la base de datos responden correctamente.', 'text-verdeok');
         setStatus(true);
