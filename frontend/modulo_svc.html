@@ -190,7 +190,7 @@
   // ------------------------------------------------------------------
   // 1. Recuperamos la URL base de la API guardada por el portal index.html
   // ------------------------------------------------------------------
-  const urlApi = sessionStorage.getItem('url_api');
+  const urlApi = sessionStorage.getItem('apiUrl');
 
   const elEstadoUrlApi = document.getElementById('estadoUrlApi');
   const elSelector = document.getElementById('selectorTicker');
@@ -248,7 +248,7 @@
         method: 'GET',
         headers: {
           // Cabecera obligatoria para evitar la pantalla de advertencia de ngrok
-          'ngrok-skip-browser-warning': '69420',
+          'ngrok-skip-browser-warning': 'true',
           'Content-Type': 'application/json'
         }
       });
