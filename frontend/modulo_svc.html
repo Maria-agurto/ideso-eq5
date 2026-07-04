@@ -248,7 +248,7 @@
         method: 'GET',
         headers: {
           // Cabecera obligatoria para evitar la pantalla de advertencia de ngrok
-          'ngrok-skip-browser-warning': 'true',
+          'ngrok-skip-browser-warning': '69420',
           'Content-Type': 'application/json'
         }
       });
@@ -273,8 +273,12 @@
   function renderizarDatos(ticker, datos) {
     document.getElementById('tickerActivo').textContent = ticker;
 
-    // --- Señal actual (BUY / SELL) ---
-    const senal = (datos.senal || datos.signal || '').toString().toUpperCase();
+    // La API devuelve los datos anidados en "prediccion" y "metricas"
+    const prediccion = datos.prediccion || {};
+    const metricas = datos.metricas || {};
+
+    // --- Senal actual (BUY / SELL) ---
+    const senal = (prediccion['señal'] || prediccion.senal || prediccion.signal || '').toString().toUpperCase();
     const tarjetaSenal = document.getElementById('tarjetaSenal');
     const textoSenal = document.getElementById('textoSenal');
     const iconoSenal = document.getElementById('iconoSenal');
@@ -306,14 +310,14 @@
     const formatearPorcentaje = (valor) =>
       (valor === undefined || valor === null) ? '—' : `${(valor * 100).toFixed(1)}%`;
 
-    document.getElementById('valorAccuracy').textContent = formatearPorcentaje(datos.accuracy);
-    document.getElementById('valorPrecision').textContent = formatearPorcentaje(datos.precision);
-    document.getElementById('valorRecall').textContent = formatearPorcentaje(datos.recall);
-    document.getElementById('valorF1').textContent = formatearPorcentaje(datos.f1_score ?? datos.f1);
+    document.getElementById('valorAccuracy').textContent = formatearPorcentaje(metricas.accuracy);
+    document.getElementById('valorPrecision').textContent = formatearPorcentaje(metricas.precision);
+    document.getElementById('valorRecall').textContent = formatearPorcentaje(metricas.recall);
+    document.getElementById('valorF1').textContent = formatearPorcentaje(metricas.f1_score ?? metricas.f1);
 
-    // --- Matriz de confusión con Plotly ---
+    // --- Matriz de confusion con Plotly ---
     // Se espera un arreglo 2x2: [[VN, FP], [FN, VP]]
-    const matriz = datos.matriz_confusion || datos.confusion_matrix || [[0, 0], [0, 0]];
+    const matriz = metricas.matriz_confusion || metricas.confusion_matrix || [[0, 0], [0, 0]];
     dibujarMatrizConfusion(matriz);
   }
 
